@@ -6,4 +6,13 @@ set -e
 echo "Running environment checks..."
 chiva env check
 
+echo "Formatting code..."
+bun run format
+
+echo "Running lint checks..."
+bun run lint
+
+echo "Running type checks..."
+bun run typecheck
+
 echo "Pre-commit checks passed."
