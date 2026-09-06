@@ -16,7 +16,9 @@ export class FileService {
 				fs.mkdirSync(dir, { recursive: true });
 				this.logger.debug(`Created directory: ${dir}`);
 			} catch (err) {
-				this.logger.error(`Failed to create directory ${dir}: ${(err as Error).message}`);
+				this.logger.error(
+					`Failed to create directory ${dir}: ${(err as Error).message}`,
+				);
 				throw err;
 			}
 		}
@@ -27,7 +29,9 @@ export class FileService {
 		try {
 			fs.appendFileSync(filePath, `${data}\n`, { encoding: "utf8" });
 		} catch (err) {
-			this.logger.error(`Failed to append to file ${filePath}: ${(err as Error).message}`);
+			this.logger.error(
+				`Failed to append to file ${filePath}: ${(err as Error).message}`,
+			);
 			throw err;
 		}
 	}
@@ -41,7 +45,9 @@ export class FileService {
 		try {
 			fs.writeFileSync(filePath, data, { encoding: "utf8" });
 		} catch (err) {
-			this.logger.error(`Failed to write file ${filePath}: ${(err as Error).message}`);
+			this.logger.error(
+				`Failed to write file ${filePath}: ${(err as Error).message}`,
+			);
 			throw err;
 		}
 	}
@@ -50,7 +56,9 @@ export class FileService {
 		try {
 			return fs.readFileSync(filePath, { encoding });
 		} catch (err) {
-			this.logger.error(`Failed to read file ${filePath}: ${(err as Error).message}`);
+			this.logger.error(
+				`Failed to read file ${filePath}: ${(err as Error).message}`,
+			);
 			throw err;
 		}
 	}
