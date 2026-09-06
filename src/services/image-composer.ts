@@ -2,29 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
 import type { LoggerService } from "~/services/logger";
-
-interface Template {
-	id: string;
-	svgBuilder: (
-		headline: string,
-		width: number,
-		height: number,
-		pageName: string,
-	) => Buffer;
-}
-
-interface ImageComposeConfig {
-	image: {
-		width: number;
-		height: number;
-	};
-	facebook: {
-		pageName: string;
-	};
-	output: {
-		imagePath: string;
-	};
-}
+import type { Template, ImageComposeConfig } from "~/types";
 
 // --- Helper Functions for SVG ---
 function escapeXml(text: string): string {

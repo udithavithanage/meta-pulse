@@ -1,12 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-export enum LogLevel {
-	DEBUG = "DEBUG",
-	INFO = "INFO",
-	WARN = "WARN",
-	ERROR = "ERROR",
-}
+import { LogLevel } from "~/types";
 
 export class LoggerService {
 	private logFilePath: string;
