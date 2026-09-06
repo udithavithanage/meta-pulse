@@ -6,3 +6,4 @@ export * from "./image-composer";
 export * from "./pollinations";
 export * from "./logger";
 export * from "./config";
+export * from "./template";
