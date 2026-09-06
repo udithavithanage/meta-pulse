@@ -1,4 +1,4 @@
-import type { FacebookConfig, ReliabilityConfig } from "./facebook";
+import type { FacebookConfig, ReliabilityConfig } from "~/types";
 
 export interface AppConfig {
 	gemini: {

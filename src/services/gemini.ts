@@ -1,7 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 
-import type { HistoryService } from "~/services/history";
-import type { LoggerService } from "~/services/logger";
+import type { HistoryService, LoggerService } from "~/services";
 import type { GeminiConfig, TopicPlan } from "~/types";
 
 export class GeminiService {

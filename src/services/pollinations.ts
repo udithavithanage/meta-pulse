@@ -1,4 +1,4 @@
-import type { LoggerService } from "~/services/logger";
+import type { LoggerService } from "~/services";
 import type { PollinationsConfig, TopicPlan } from "~/types";
 
 export class PollinationsService {

@@ -1,37 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
+
 import sharp from "sharp";
-import type { LoggerService } from "~/services/logger";
+
+import { escapeXml, wrapText } from "~/utils";
+
+import type { LoggerService } from "~/services";
 import type { Template, ImageComposeConfig } from "~/types";
 
-// --- Helper Functions for SVG ---
-function escapeXml(text: string): string {
-	return text
-		.replace(/&/g, "&amp;")
-		.replace(/</g, "&lt;")
-		.replace(/>/g, "&gt;")
-		.replace(/"/g, "&quot;")
-		.replace(/'/g, "&apos;");
-}
-
-function wrapText(text: string, maxCharsPerLine: number): string[] {
-	const words = text.split(" ");
-	const lines: string[] = [];
-	let current = "";
-	for (const word of words) {
-		const candidate = current ? `${current} ${word}` : word;
-		if (candidate.length > maxCharsPerLine && current) {
-			lines.push(current);
-			current = word;
-		} else {
-			current = candidate;
-		}
-	}
-	if (current) lines.push(current);
-	return lines;
-}
-
-// --- Templates ---
 const templates: Template[] = [
 	{
 		id: "legacy-poll",
@@ -81,39 +57,6 @@ const templates: Template[] = [
         <circle cx="${width * 0.58}" cy="-14" r="30" fill="#002395" />
         <text x="${width * 0.58 + 45}" y="-2" text-anchor="start" fill="#ffffff" font-family="Arial Black, Impact, sans-serif" font-size="42" font-weight="900">LIKE</text>
     </g>
-</svg>`);
-		},
-	},
-	{
-		id: "fire-vs-ice",
-		svgBuilder: (headline, width, height, pageName) => {
-			return Buffer.from(`
-<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-    <defs><linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="50%" stop-opacity="0"/><stop offset="100%" stop-color="#333" stop-opacity="0.9"/></linearGradient></defs>
-    <rect width="100%" height="100%" fill="url(#g2)" />
-    <!-- Watermark -->
-    <text x="${width / 2}" y="60" text-anchor="middle" fill="rgba(255, 255, 255, 0.8)" font-family="Arial" font-size="30" font-weight="bold">${escapeXml(pageName)}</text>
-    
-    <text x="50%" y="50%" font-family="Impact" font-size="70" fill="yellow" text-anchor="middle">${escapeXml(headline)}</text>
-    <text x="25%" y="90%" font-family="Arial" font-size="30" fill="orange">HOT</text>
-    <text x="75%" y="90%" font-family="Arial" font-size="30" fill="cyan">COOL</text>
-</svg>`);
-		},
-	},
-	{
-		id: "agree-disagree",
-		svgBuilder: (headline, width, height, pageName) => {
-			return Buffer.from(`
-<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-    <rect width="100%" height="100%" fill="rgba(0,0,50,0.5)" />
-    <!-- Watermark -->
-    <text x="${width / 2}" y="60" text-anchor="middle" fill="rgba(255, 255, 255, 0.8)" font-family="Arial" font-size="30" font-weight="bold">${escapeXml(pageName)}</text>
-    
-    <text x="50%" y="20%" font-family="Arial" font-size="40" fill="white" text-anchor="middle">${escapeXml(headline)}</text>
-    <rect x="10%" y="80%" width="35%" height="10%" fill="green" rx="10"/>
-    <text x="27.5%" y="87%" font-family="Arial" font-size="25" fill="white" text-anchor="middle">YES</text>
-    <rect x="55%" y="80%" width="35%" height="10%" fill="red" rx="10"/>
-    <text x="72.5%" y="87%" font-family="Arial" font-size="25" fill="white" text-anchor="middle">NO</text>
 </svg>`);
 		},
 	},
