@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+# Run commit message checks.
+set -e
+
+echo "Running commit message checks..."
+bunx commitlint --edit "$1"
+
+echo "Commit message checks passed."
