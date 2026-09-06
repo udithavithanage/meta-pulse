@@ -4,20 +4,20 @@ import path from "node:path";
 import type { LoggerService } from "~/services";
 
 export class FileService {
-	private logger: LoggerService;
+	private _logger: LoggerService;
 
-	constructor(logger: LoggerService) {
-		this.logger = logger;
+	public constructor(logger: LoggerService) {
+		this._logger = logger;
 	}
 
-	ensureDirectoryExistence(filePath: string) {
+	public ensureDirectoryExistence(filePath: string): void {
 		const dir = path.dirname(filePath);
 		if (!fs.existsSync(dir)) {
 			try {
 				fs.mkdirSync(dir, { recursive: true });
-				this.logger.debug(`Created directory: ${dir}`);
+				this._logger.debug(`Created directory: ${dir}`);
 			} catch (err) {
-				this.logger.error(
+				this._logger.error(
 					`Failed to create directory ${dir}: ${(err as Error).message}`,
 				);
 				throw err;
@@ -25,39 +25,39 @@ export class FileService {
 		}
 	}
 
-	appendToFile(filePath: string, data: string) {
+	public appendToFile(filePath: string, data: string): void {
 		this.ensureDirectoryExistence(filePath);
 		try {
 			fs.appendFileSync(filePath, `${data}\n`, { encoding: "utf8" });
 		} catch (err) {
-			this.logger.error(
+			this._logger.error(
 				`Failed to append to file ${filePath}: ${(err as Error).message}`,
 			);
 			throw err;
 		}
 	}
 
-	pathExists(filePath: string): boolean {
+	public pathExists(filePath: string): boolean {
 		return fs.existsSync(filePath);
 	}
 
-	writeFile(filePath: string, data: string) {
+	public writeFile(filePath: string, data: string): void {
 		this.ensureDirectoryExistence(filePath);
 		try {
 			fs.writeFileSync(filePath, data, { encoding: "utf8" });
 		} catch (err) {
-			this.logger.error(
+			this._logger.error(
 				`Failed to write file ${filePath}: ${(err as Error).message}`,
 			);
 			throw err;
 		}
 	}
 
-	readFile(filePath: string, encoding: BufferEncoding = "utf8"): string {
+	public readFile(filePath: string, encoding: BufferEncoding = "utf8"): string {
 		try {
 			return fs.readFileSync(filePath, { encoding });
 		} catch (err) {
-			this.logger.error(
+			this._logger.error(
 				`Failed to read file ${filePath}: ${(err as Error).message}`,
 			);
 			throw err;

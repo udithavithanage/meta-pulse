@@ -63,28 +63,28 @@ const templates: Template[] = [
 ];
 
 export class ImageComposeService {
-	private config: ImageComposeConfig;
-	private logger: LoggerService;
+	private _config: ImageComposeConfig;
+	private _logger: LoggerService;
 
-	constructor(config: ImageComposeConfig, logger: LoggerService) {
-		this.config = config;
-		this.logger = logger;
+	public constructor(config: ImageComposeConfig, logger: LoggerService) {
+		this._config = config;
+		this._logger = logger;
 	}
 
-	async composeFinalImage(
+	public async composeFinalImage(
 		aiImageBuffer: Buffer,
 		headline: string,
 		templateId?: string,
 	): Promise<string> {
-		this.logger.info("[3/6] Compositing final image...");
+		this._logger.info("[3/6] Compositing final image...");
 
-		const { width, height } = this.config.image;
+		const { width, height } = this._config.image;
 
 		const template =
 			templates.find((t) => t.id === templateId) ||
 			templates[Math.floor(Math.random() * templates.length)];
 
-		this.logger.debug(`Using template: ${template?.id}`);
+		this._logger.debug(`Using template: ${template?.id}`);
 
 		const background = await sharp(aiImageBuffer)
 			.resize(width, height, { fit: "cover", position: "center" })
@@ -94,19 +94,21 @@ export class ImageComposeService {
 			headline,
 			width,
 			height,
-			this.config.facebook.pageName,
+			this._config.facebook.pageName,
 		);
 
-		await fs.promises.mkdir(path.dirname(this.config.output.imagePath), {
+		await fs.promises.mkdir(path.dirname(this._config.output.imagePath), {
 			recursive: true,
 		});
 
 		await sharp(background)
 			.composite([{ input: overlayBuffer, top: 0, left: 0 }])
 			.png()
-			.toFile(this.config.output.imagePath);
+			.toFile(this._config.output.imagePath);
 
-		this.logger.info(`Final image written to: ${this.config.output.imagePath}`);
-		return this.config.output.imagePath;
+		this._logger.info(
+			`Final image written to: ${this._config.output.imagePath}`,
+		);
+		return this._config.output.imagePath;
 	}
 }
