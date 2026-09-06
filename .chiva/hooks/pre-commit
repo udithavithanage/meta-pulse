@@ -3,8 +3,8 @@
 # Run pre-commit checks.
 set -e
 
-# echo "Running environment checks..."
-# chiva env check
+echo "Running environment checks..."
+chiva env check
 
 echo "Formatting code..."
 bun run format
@@ -14,5 +14,8 @@ bun run lint
 
 echo "Running type checks..."
 bun run typecheck
+
+echo "Building project..."
+bun run build
 
 echo "Pre-commit checks passed."

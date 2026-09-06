@@ -1,4 +1,5 @@
 import {
+	ConfigService,
 	FacebookService,
 	FileService,
 	GeminiService,
@@ -7,59 +8,6 @@ import {
 	LoggerService,
 	PollinationsService,
 } from "~/services";
-
-import type { AppConfig } from "~/types";
-
-const config: AppConfig = {
-	gemini: {
-		apiKey: process.env.GEMINI_API_KEY || "your-gemini-api-key",
-		textModel: process.env.GEMINI_TEXT_MODEL || "gemini-1.5-flash",
-		useGoogleSearchGrounding:
-			process.env.GEMINI_USE_GOOGLE_SEARCH_GROUNDING === "true",
-		topicPrompt: process.env.GEMINI_TOPIC_PROMPT || "your-gemini-topic-prompt",
-	},
-	content: {
-		niche: process.env.CONTENT_NICHE || "your-content-niche",
-		bannedTopics: (process.env.CONTENT_BANNED_TOPICS || "").split(", "),
-		monetizationSafeMode: process.env.CONTENT_MONETIZATION_SAFE_MODE === "true",
-		tone: "Informative, engaging, and professional",
-		language: "English",
-		contentGoals: ["Build authority", "Provide value"],
-	},
-	image: {
-		headline: {
-			maxCharacters: Number(process.env.IMAGE_HEADLINE_MAX_CHARACTERS || 60),
-		},
-		width: 1024,
-		height: 1024,
-		promptTemplate:
-			"A high-quality, professional photo illustrating: {{TOPIC}}. {{VISUAL_HINT}}",
-	},
-	output: {
-		imagePath: "./final_post.png",
-	},
-	caption: {
-		callToActionOptions: ["What do you think?", "Let me know in the comments!"],
-		bannedPhrases: ["click here", "buy now"],
-		includeCallToAction: true,
-		minParagraphs: 2,
-		maxParagraphs: 4,
-		hashtagCount: 3,
-		fixedHashtags: ["#AI", "#TechTrends"],
-	},
-	facebook: {
-		pageId: process.env.FACEBOOK_PAGE_ID || "your-facebook-page-id",
-		pageName: process.env.FACEBOOK_PAGE_NAME || "Your Brand",
-		accessToken:
-			process.env.FACEBOOK_ACCESS_TOKEN || "your-facebook-access-token",
-		graphVersion: process.env.GRAPH_API_VERSION || "v23.0",
-	},
-	reliability: { requestTimeoutMs: 30000 },
-	history: {
-		filePath: process.env.HISTORY_FILE_PATH || "./logs/history.json",
-		keepLastN: Number(process.env.HISTORY_KEEP_LAST_N || 50),
-	},
-};
 
 /**
  * Executes a function with a simple retry mechanism.
@@ -83,8 +31,11 @@ async function withRetry<T>(
  * Main function to execute the automated content workflow.
  */
 async function main() {
+	const configService = new ConfigService();
+	const config = configService.load();
+
 	const logger = new LoggerService(
-		process.env.LOGGING_FILE_PATH || "./logs/app.log",
+		config.history.filePath.replace("history.json", "app.log"),
 	);
 	const fileService = new FileService(logger);
 	const historyService = new HistoryService(
