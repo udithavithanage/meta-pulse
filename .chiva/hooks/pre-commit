@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+# Run pre-commit checks.
+set -e
+
+echo "Running environment checks..."
+chiva env check
+
+echo "Pre-commit checks passed."
