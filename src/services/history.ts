@@ -1,6 +1,4 @@
-import type { FileService } from "~/services/file";
-import type { LoggerService } from "~/services/logger";
-
+import type { FileService, LoggerService } from "~/services";
 import type { HistoryConfig, HistoryEntry } from "~/types";
 
 export class HistoryService {

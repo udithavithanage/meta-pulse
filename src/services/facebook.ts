@@ -1,7 +1,9 @@
 import fs from "node:fs";
+
 import axios from "axios";
 import FormData from "form-data";
-import type { LoggerService } from "~/services/logger";
+
+import type { LoggerService } from "~/services";
 import type {
 	FacebookConfig,
 	FacebookPostResponse,

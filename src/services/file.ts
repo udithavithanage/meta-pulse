@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { LoggerService } from "~/services/logger";
+
+import type { LoggerService } from "~/services";
 
 export class FileService {
 	private logger: LoggerService;

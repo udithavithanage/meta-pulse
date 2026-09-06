@@ -1,10 +1,13 @@
-import { FacebookService } from "~/services/facebook";
-import { FileService } from "~/services/file";
-import { GeminiService } from "~/services/gemini";
-import { HistoryService } from "~/services/history";
-import { ImageComposeService } from "~/services/image-composer";
-import { LoggerService } from "~/services/logger";
-import { PollinationsService } from "~/services/pollinations";
+import {
+	FacebookService,
+	FileService,
+	GeminiService,
+	HistoryService,
+	ImageComposeService,
+	LoggerService,
+	PollinationsService,
+} from "~/services";
+
 import type { AppConfig } from "~/types";
 
 // Configuration (Normally loaded from env, here mocked for structure)
