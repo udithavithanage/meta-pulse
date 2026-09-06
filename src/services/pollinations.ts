@@ -1,17 +1,5 @@
 import type { LoggerService } from "~/services/logger";
-
-interface PollinationsConfig {
-	image: {
-		promptTemplate: string;
-		width: number;
-		height: number;
-	};
-}
-
-interface TopicPlan {
-	topic: string;
-	visualHint: string;
-}
+import type { PollinationsConfig, TopicPlan } from "~/types";
 
 export class PollinationsService {
 	private config: PollinationsConfig;

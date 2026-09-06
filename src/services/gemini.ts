@@ -2,50 +2,13 @@ import { GoogleGenAI } from "@google/genai";
 
 import type { HistoryService } from "~/services/history";
 import type { LoggerService } from "~/services/logger";
-
-interface GeminiConfig {
-	gemini: {
-		apiKey: string;
-		textModel: string;
-		useGoogleSearchGrounding: boolean;
-		topicPrompt: string;
-	};
-	content: {
-		niche: string;
-		bannedTopics: string[];
-		monetizationSafeMode: boolean;
-		tone: string;
-		language: string;
-		contentGoals: string[];
-	};
-	image: {
-		headline: {
-			maxCharacters: number;
-		};
-	};
-	caption: {
-		callToActionOptions: string[];
-		bannedPhrases: string[];
-		includeCallToAction: boolean;
-		minParagraphs: number;
-		maxParagraphs: number;
-		hashtagCount: number;
-		fixedHashtags: string[];
-	};
-}
-
-interface TopicPlan {
-	topic: string;
-	headline: string;
-	visualHint: string;
-	angle: string;
-}
+import type { GeminiConfig, TopicPlan } from "~/types";
 
 export class GeminiService {
-	private ai: GoogleGenAI;
 	private config: GeminiConfig;
 	private logger: LoggerService;
 	private historyService: HistoryService;
+	private ai: GoogleGenAI;
 	private withRetry: <T>(
 		fn: () => Promise<T>,
 		description: string,
@@ -174,7 +137,7 @@ export class GeminiService {
 		const hasHashtag = caption.includes("#");
 		if (hasHashtag) return caption;
 
-		return caption + "\n\n" + this.config.caption.fixedHashtags.join(" ");
+		return `${caption}\n\n${this.config.caption.fixedHashtags.join(" ")}`;
 	}
 
 	async generateCaption(plan: TopicPlan): Promise<string> {
@@ -243,7 +206,7 @@ Strict rules:
 
 		caption = this.ensureHashtags(caption);
 
-		this.logger.info("Generated caption:\n" + caption);
+		this.logger.info(`Generated caption:\n${caption}`);
 
 		return caption;
 	}

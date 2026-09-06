@@ -2,16 +2,11 @@ import fs from "node:fs";
 import axios from "axios";
 import FormData from "form-data";
 import type { LoggerService } from "~/services/logger";
-
-interface FacebookConfig {
-	pageId: string;
-	accessToken: string;
-	graphVersion: string;
-}
-
-interface ReliabilityConfig {
-	requestTimeoutMs: number;
-}
+import type {
+	FacebookConfig,
+	FacebookPostResponse,
+	ReliabilityConfig,
+} from "~/types";
 
 export class FacebookService {
 	private config: FacebookConfig;
@@ -34,7 +29,10 @@ export class FacebookService {
 		this.withRetry = withRetry;
 	}
 
-	async postToFacebook(imagePath: string, caption: string): Promise<any> {
+	async postToFacebook(
+		imagePath: string,
+		caption: string,
+	): Promise<FacebookPostResponse> {
 		this.logger.info(
 			"[5/6] Uploading to Facebook via Feed Post method (Page Token)...",
 		);
