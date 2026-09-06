@@ -1,11 +1,20 @@
 import type { FileService, LoggerService } from "~/services";
 import type { HistoryConfig, HistoryEntry } from "~/types";
 
+/**
+ * Service responsible for managing the history of generated content entries.
+ */
 export class HistoryService {
 	private _config: HistoryConfig;
 	private _fileService: FileService;
 	private _logger: LoggerService;
 
+	/**
+	 * Creates an instance of HistoryService.
+	 * @param config Configuration for history management.
+	 * @param fileService File service instance for file operations.
+	 * @param logger Logger service instance.
+	 */
 	public constructor(
 		config: HistoryConfig,
 		fileService: FileService,
@@ -16,6 +25,9 @@ export class HistoryService {
 		this._logger = logger;
 	}
 
+	/**
+	 * Ensures the history file exists, initializing it if it doesn't.
+	 */
 	private _ensureFile(): void {
 		const filePath = this._config.history.filePath;
 		if (!this._fileService.pathExists(filePath)) {
@@ -24,6 +36,10 @@ export class HistoryService {
 		}
 	}
 
+	/**
+	 * Loads all history entries from the history file.
+	 * @returns An array of history entries.
+	 */
 	public loadHistory(): HistoryEntry[] {
 		try {
 			this._ensureFile();
@@ -39,11 +55,21 @@ export class HistoryService {
 		}
 	}
 
+	/**
+	 * Gets the list of recent topics from the history.
+	 * @returns An array of topics.
+	 */
 	public getRecentTopics(): string[] {
 		const history = this.loadHistory();
 		return history.map((entry) => entry.topic);
 	}
 
+	/**
+	 * Adds a new entry to the history and trims to keep only the last N entries.
+	 * @param entry The history entry to add.
+	 * @param entry.topic The topic of the post.
+	 * @param entry.headline The headline of the post.
+	 */
 	public addEntry({
 		topic,
 		headline,

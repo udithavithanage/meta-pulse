@@ -10,7 +10,6 @@ import {
 
 import type { AppConfig } from "~/types";
 
-// Configuration (Normally loaded from env, here mocked for structure)
 const config: AppConfig = {
 	gemini: {
 		apiKey: process.env.GEMINI_API_KEY || "your-gemini-api-key",
@@ -62,11 +61,16 @@ const config: AppConfig = {
 	},
 };
 
+/**
+ * Executes a function with a simple retry mechanism.
+ * @param fn The function to execute.
+ * @param description A description of the action, used for error logging.
+ * @returns A promise resolving to the function's return value.
+ */
 async function withRetry<T>(
 	fn: () => Promise<T>,
 	description: string,
 ): Promise<T> {
-	// Simple retry implementation
 	try {
 		return await fn();
 	} catch (err) {
@@ -75,6 +79,9 @@ async function withRetry<T>(
 	}
 }
 
+/**
+ * Main function to execute the automated content workflow.
+ */
 async function main() {
 	const logger = new LoggerService(
 		process.env.LOGGING_FILE_PATH || "./logs/app.log",

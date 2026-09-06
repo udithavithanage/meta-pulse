@@ -8,6 +8,9 @@ import { escapeXml, wrapText } from "~/utils";
 import type { LoggerService } from "~/services";
 import type { Template, ImageComposeConfig } from "~/types";
 
+/**
+ * Defines available SVG templates for image composition.
+ */
 const templates: Template[] = [
 	{
 		id: "legacy-poll",
@@ -62,15 +65,30 @@ const templates: Template[] = [
 	},
 ];
 
+/**
+ * Service responsible for composing final images using AI-generated base images and templates.
+ */
 export class ImageComposeService {
 	private _config: ImageComposeConfig;
 	private _logger: LoggerService;
 
+	/**
+	 * Creates an instance of ImageComposeService.
+	 * @param config Configuration for image composition.
+	 * @param logger Logger service instance.
+	 */
 	public constructor(config: ImageComposeConfig, logger: LoggerService) {
 		this._config = config;
 		this._logger = logger;
 	}
 
+	/**
+	 * Composes the final image by applying a template over the AI-generated base image.
+	 * @param aiImageBuffer Buffer of the AI-generated image.
+	 * @param headline The text headline to overlay.
+	 * @param templateId Optional template ID to use.
+	 * @returns The path of the composed final image.
+	 */
 	public async composeFinalImage(
 		aiImageBuffer: Buffer,
 		headline: string,
