@@ -4,72 +4,77 @@ import sharp from "sharp";
 import type { LoggerService } from "~/services/logger";
 
 interface Template {
-  id: string;
-  svgBuilder: (headline: string, width: number, height: number, pageName: string) => Buffer;
+	id: string;
+	svgBuilder: (
+		headline: string,
+		width: number,
+		height: number,
+		pageName: string,
+	) => Buffer;
 }
 
 interface ImageComposeConfig {
-  image: {
-    width: number;
-    height: number;
-  };
-  facebook: {
-    pageName: string;
-  };
-  output: {
-    imagePath: string;
-  };
+	image: {
+		width: number;
+		height: number;
+	};
+	facebook: {
+		pageName: string;
+	};
+	output: {
+		imagePath: string;
+	};
 }
 
 // --- Helper Functions for SVG ---
 function escapeXml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
+	return text
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&apos;");
 }
 
 function wrapText(text: string, maxCharsPerLine: number): string[] {
-  const words = text.split(" ");
-  const lines: string[] = [];
-  let current = "";
-  for (const word of words) {
-    const candidate = current ? `${current} ${word}` : word;
-    if (candidate.length > maxCharsPerLine && current) {
-      lines.push(current);
-      current = word;
-    } else {
-      current = candidate;
-    }
-  }
-  if (current) lines.push(current);
-  return lines;
+	const words = text.split(" ");
+	const lines: string[] = [];
+	let current = "";
+	for (const word of words) {
+		const candidate = current ? `${current} ${word}` : word;
+		if (candidate.length > maxCharsPerLine && current) {
+			lines.push(current);
+			current = word;
+		} else {
+			current = candidate;
+		}
+	}
+	if (current) lines.push(current);
+	return lines;
 }
 
 // --- Templates ---
 const templates: Template[] = [
-  {
-    id: "legacy-poll",
-    svgBuilder: (headline, width, height, pageName) => {
-      const safeText = escapeXml(headline);
-      const lines = wrapText(safeText, 25);
-      const fontSize = 55;
-      const lineHeight = fontSize * 1.25;
-      const blockHeight = lines.length * lineHeight;
-      const pollY = height - 90;
-      const textBottomY = pollY - 140;
-      const firstLineY = textBottomY - blockHeight + fontSize;
+	{
+		id: "legacy-poll",
+		svgBuilder: (headline, width, height, pageName) => {
+			const safeText = escapeXml(headline);
+			const lines = wrapText(safeText, 25);
+			const fontSize = 55;
+			const lineHeight = fontSize * 1.25;
+			const blockHeight = lines.length * lineHeight;
+			const pollY = height - 90;
+			const textBottomY = pollY - 140;
+			const firstLineY = textBottomY - blockHeight + fontSize;
 
-      const tspans = lines
-        .map(
-          (line, i) =>
-            `<tspan x="${width / 2}" dy="${i === 0 ? 0 : lineHeight}">${line}</tspan>`,
-        )
-        .join("");
+			const tspans = lines
+				.map(
+					(line, i) =>
+						`<tspan x="${width / 2}" dy="${i === 0 ? 0 : lineHeight}">${line}</tspan>`,
+				)
+				.join("");
 
-      return Buffer.from(`
+			return Buffer.from(`
 <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
     <defs>
         <linearGradient id="fadeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -99,12 +104,12 @@ const templates: Template[] = [
         <text x="${width * 0.58 + 45}" y="-2" text-anchor="start" fill="#ffffff" font-family="Arial Black, Impact, sans-serif" font-size="42" font-weight="900">LIKE</text>
     </g>
 </svg>`);
-    },
-  },
-  {
-    id: "fire-vs-ice",
-    svgBuilder: (headline, width, height, pageName) => {
-      return Buffer.from(`
+		},
+	},
+	{
+		id: "fire-vs-ice",
+		svgBuilder: (headline, width, height, pageName) => {
+			return Buffer.from(`
 <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
     <defs><linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="50%" stop-opacity="0"/><stop offset="100%" stop-color="#333" stop-opacity="0.9"/></linearGradient></defs>
     <rect width="100%" height="100%" fill="url(#g2)" />
@@ -115,12 +120,12 @@ const templates: Template[] = [
     <text x="25%" y="90%" font-family="Arial" font-size="30" fill="orange">HOT</text>
     <text x="75%" y="90%" font-family="Arial" font-size="30" fill="cyan">COOL</text>
 </svg>`);
-    },
-  },
-  {
-    id: "agree-disagree",
-    svgBuilder: (headline, width, height, pageName) => {
-      return Buffer.from(`
+		},
+	},
+	{
+		id: "agree-disagree",
+		svgBuilder: (headline, width, height, pageName) => {
+			return Buffer.from(`
 <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
     <rect width="100%" height="100%" fill="rgba(0,0,50,0.5)" />
     <!-- Watermark -->
@@ -132,50 +137,55 @@ const templates: Template[] = [
     <rect x="55%" y="80%" width="35%" height="10%" fill="red" rx="10"/>
     <text x="72.5%" y="87%" font-family="Arial" font-size="25" fill="white" text-anchor="middle">NO</text>
 </svg>`);
-    },
-  },
+		},
+	},
 ];
 
 export class ImageComposeService {
-  private config: ImageComposeConfig;
-  private logger: LoggerService;
+	private config: ImageComposeConfig;
+	private logger: LoggerService;
 
-  constructor(config: ImageComposeConfig, logger: LoggerService) {
-    this.config = config;
-    this.logger = logger;
-  }
+	constructor(config: ImageComposeConfig, logger: LoggerService) {
+		this.config = config;
+		this.logger = logger;
+	}
 
-  async composeFinalImage(
-    aiImageBuffer: Buffer,
-    headline: string,
-    templateId?: string,
-  ): Promise<string> {
-    this.logger.info("[3/6] Compositing final image...");
+	async composeFinalImage(
+		aiImageBuffer: Buffer,
+		headline: string,
+		templateId?: string,
+	): Promise<string> {
+		this.logger.info("[3/6] Compositing final image...");
 
-    const { width, height } = this.config.image;
+		const { width, height } = this.config.image;
 
-    const template =
-      templates.find((t) => t.id === templateId) ||
-      templates[Math.floor(Math.random() * templates.length)];
+		const template =
+			templates.find((t) => t.id === templateId) ||
+			templates[Math.floor(Math.random() * templates.length)];
 
-    this.logger.debug(`Using template: ${template?.id}`);
+		this.logger.debug(`Using template: ${template?.id}`);
 
-    const background = await sharp(aiImageBuffer)
-      .resize(width, height, { fit: "cover", position: "center" })
-      .toBuffer();
+		const background = await sharp(aiImageBuffer)
+			.resize(width, height, { fit: "cover", position: "center" })
+			.toBuffer();
 
-    const overlayBuffer = template?.svgBuilder(headline, width, height, this.config.facebook.pageName);
+		const overlayBuffer = template?.svgBuilder(
+			headline,
+			width,
+			height,
+			this.config.facebook.pageName,
+		);
 
-    await fs.promises.mkdir(path.dirname(this.config.output.imagePath), {
-      recursive: true,
-    });
+		await fs.promises.mkdir(path.dirname(this.config.output.imagePath), {
+			recursive: true,
+		});
 
-    await sharp(background)
-      .composite([{ input: overlayBuffer, top: 0, left: 0 }])
-      .png()
-      .toFile(this.config.output.imagePath);
+		await sharp(background)
+			.composite([{ input: overlayBuffer, top: 0, left: 0 }])
+			.png()
+			.toFile(this.config.output.imagePath);
 
-    this.logger.info(`Final image written to: ${this.config.output.imagePath}`);
-    return this.config.output.imagePath;
-  }
+		this.logger.info(`Final image written to: ${this.config.output.imagePath}`);
+		return this.config.output.imagePath;
+	}
 }
