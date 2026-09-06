@@ -10,6 +10,9 @@ import type {
 	ReliabilityConfig,
 } from "~/types";
 
+/**
+ * Service responsible for interacting with the Facebook Graph API to post content.
+ */
 export class FacebookService {
 	private _config: FacebookConfig;
 	private _reliability: ReliabilityConfig;
@@ -19,6 +22,13 @@ export class FacebookService {
 		description: string,
 	) => Promise<T>;
 
+	/**
+	 * Creates an instance of FacebookService.
+	 * @param config Facebook API configuration.
+	 * @param reliability Reliability configuration for requests.
+	 * @param logger Logger service instance.
+	 * @param withRetry Retry handler function.
+	 */
 	public constructor(
 		config: FacebookConfig,
 		reliability: ReliabilityConfig,
@@ -31,6 +41,12 @@ export class FacebookService {
 		this._withRetry = withRetry;
 	}
 
+	/**
+	 * Posts a photo with a caption to the Facebook Page feed.
+	 * @param imagePath The path of the image to post.
+	 * @param caption The caption text for the post.
+	 * @returns The response from the Facebook API.
+	 */
 	public async postToFacebook(
 		imagePath: string,
 		caption: string,
@@ -48,7 +64,6 @@ export class FacebookService {
 		}
 
 		const doUpload = async () => {
-			// Step 1: Upload photo as unpublished to get Media ID
 			this._logger.info(
 				"-> Step 1: Uploading image as unpublished to get Media ID...",
 			);
@@ -72,7 +87,6 @@ export class FacebookService {
 			const mediaId = photoResponse.data.id;
 			this._logger.info(`Image uploaded successfully. Media ID: ${mediaId}`);
 
-			// Step 2: Publish standard feed post with the image
 			this._logger.info(
 				"-> Step 2: Publishing standard feed post with the image...",
 			);

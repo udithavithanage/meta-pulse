@@ -1,15 +1,28 @@
 import type { LoggerService } from "~/services";
 import type { PollinationsConfig, TopicPlan } from "~/types";
 
+/**
+ * Service responsible for interacting with the Pollinations.ai API to generate images.
+ */
 export class PollinationsService {
 	private _config: PollinationsConfig;
 	private _logger: LoggerService;
 
+	/**
+	 * Creates an instance of PollinationsService.
+	 * @param config Pollinations API configuration.
+	 * @param logger Logger service instance.
+	 */
 	public constructor(config: PollinationsConfig, logger: LoggerService) {
 		this._config = config;
 		this._logger = logger;
 	}
 
+	/**
+	 * Builds the image prompt based on the topic plan.
+	 * @param plan The topic plan.
+	 * @returns The formatted prompt string.
+	 */
 	private _buildPrompt(plan: TopicPlan): string {
 		return this._config.image.promptTemplate
 			.replace("{{TOPIC}}", plan.topic)
@@ -18,7 +31,8 @@ export class PollinationsService {
 
 	/**
 	 * Generates the base AI photo/illustration using Pollinations.ai API.
-	 * Returns a JPEG buffer.
+	 * @param plan The topic plan.
+	 * @returns A Promise resolving to the image buffer (JPEG).
 	 */
 	public async generateImage(plan: TopicPlan): Promise<Buffer> {
 		this._logger.info("[2/6] Generating AI image with Pollinations.ai...");

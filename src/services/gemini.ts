@@ -3,6 +3,9 @@ import { GoogleGenAI } from "@google/genai";
 import type { HistoryService, LoggerService } from "~/services";
 import type { GeminiConfig, TopicPlan } from "~/types";
 
+/**
+ * Service responsible for interacting with the Gemini AI model to research topics and generate captions.
+ */
 export class GeminiService {
 	private _config: GeminiConfig;
 	private _logger: LoggerService;
@@ -13,6 +16,13 @@ export class GeminiService {
 		description: string,
 	) => Promise<T>;
 
+	/**
+	 * Creates an instance of GeminiService.
+	 * @param config Gemini API configuration.
+	 * @param logger Logger service instance.
+	 * @param historyService History service instance.
+	 * @param withRetry Retry handler function.
+	 */
 	public constructor(
 		config: GeminiConfig,
 		logger: LoggerService,
@@ -27,6 +37,11 @@ export class GeminiService {
 		this._ai = new GoogleGenAI({ apiKey: this._config.gemini.apiKey });
 	}
 
+	/**
+	 * Parses a JSON string returned by the AI, handling potential markdown formatting.
+	 * @param text The raw JSON response string.
+	 * @returns The parsed TopicPlan object.
+	 */
 	private _parseJsonResponse(text: string): TopicPlan {
 		const cleaned = text
 			.replace(/```json/gi, "")
@@ -36,6 +51,10 @@ export class GeminiService {
 		return JSON.parse(cleaned);
 	}
 
+	/**
+	 * Researches a topic based on the configuration and history.
+	 * @returns A TopicPlan object.
+	 */
 	public async generateTopic(): Promise<TopicPlan> {
 		this._logger.info("[1/6] Researching today's topic...");
 
@@ -115,11 +134,20 @@ export class GeminiService {
 		return plan;
 	}
 
+	/**
+	 * Selects a random call-to-action string from configuration.
+	 * @returns A call-to-action string.
+	 */
 	private _pickCallToAction(): string {
 		const options = this._config.caption.callToActionOptions;
 		return options[Math.floor(Math.random() * options.length)] || "";
 	}
 
+	/**
+	 * Removes banned phrases from the caption.
+	 * @param caption The generated caption.
+	 * @returns The cleaned caption.
+	 */
 	private _stripBannedPhrases(caption: string): string {
 		let clean = caption;
 		for (const phrase of this._config.caption.bannedPhrases) {
@@ -132,6 +160,11 @@ export class GeminiService {
 		return clean.replace(/\n{3,}/g, "\n\n").trim();
 	}
 
+	/**
+	 * Ensures the caption ends with fixed hashtags if none are present.
+	 * @param caption The generated caption.
+	 * @returns The caption with hashtags.
+	 */
 	private _ensureHashtags(caption: string): string {
 		const hasHashtag = caption.includes("#");
 		if (hasHashtag) return caption;
@@ -139,6 +172,11 @@ export class GeminiService {
 		return `${caption}\n\n${this._config.caption.fixedHashtags.join(" ")}`;
 	}
 
+	/**
+	 * Generates a Facebook caption based on the topic plan.
+	 * @param plan The topic plan.
+	 * @returns The generated caption text.
+	 */
 	public async generateCaption(plan: TopicPlan): Promise<string> {
 		this._logger.info("[4/6] Generating Facebook caption...");
 

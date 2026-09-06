@@ -6,6 +6,7 @@
 	"private": true,
 	"scripts": {
 		"start": "bun run ./src/index.ts",
+		"build": "bun build ./src/index.ts --outdir dist --target bun --minify",
 		"format": "biome format --write .",
 		"lint": "biome lint .",
 		"typecheck": "tsc --noEmit",
