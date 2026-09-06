@@ -3,67 +3,10 @@ import path from "node:path";
 
 import sharp from "sharp";
 
-import { escapeXml, wrapText } from "~/utils";
+import { templates } from "~/services";
 
 import type { LoggerService } from "~/services";
-import type { Template, ImageComposeConfig } from "~/types";
-
-/**
- * Defines available SVG templates for image composition.
- */
-const templates: Template[] = [
-	{
-		id: "legacy-poll",
-		svgBuilder: (headline, width, height, pageName) => {
-			const safeText = escapeXml(headline);
-			const lines = wrapText(safeText, 25);
-			const fontSize = 55;
-			const lineHeight = fontSize * 1.25;
-			const blockHeight = lines.length * lineHeight;
-			const pollY = height - 90;
-			const textBottomY = pollY - 140;
-			const firstLineY = textBottomY - blockHeight + fontSize;
-
-			const tspans = lines
-				.map(
-					(line, i) =>
-						`<tspan x="${width / 2}" dy="${i === 0 ? 0 : lineHeight}">${line}</tspan>`,
-				)
-				.join("");
-
-			return Buffer.from(`
-<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-        <linearGradient id="fadeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#040814" stop-opacity="0" />
-            <stop offset="40%" stop-color="#040814" stop-opacity="0.8" />
-            <stop offset="100%" stop-color="#040814" stop-opacity="1" />
-        </linearGradient>
-        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.85" />
-        </filter>
-    </defs>
-    <rect x="0" y="${height * 0.3}" width="${width}" height="${height * 0.7}" fill="url(#fadeGradient)" />
-    <!-- Watermark -->
-    <text x="${width / 2}" y="60" text-anchor="middle" fill="rgba(255, 255, 255, 0.8)" font-family="Arial" font-size="30" font-weight="bold">${escapeXml(pageName)}</text>
-    
-    <text x="${width / 2}" y="${firstLineY}" text-anchor="middle" fill="#ffffff" font-family="Arial Black, Impact, sans-serif" font-size="${fontSize}" font-weight="900" filter="url(#shadow)">${tspans}</text>
-    
-    <rect x="${width * 0.1}" y="${pollY - 95}" width="${width * 0.266}" height="6" fill="#002395" rx="2" />
-    <rect x="${width * 0.366}" y="${pollY - 95}" width="${width * 0.266}" height="6" fill="#ffffff" />
-    <rect x="${width * 0.632}" y="${pollY - 95}" width="${width * 0.266}" height="6" fill="#ed2939" rx="2" />
-
-    <g transform="translate(0, ${pollY})">
-        <circle cx="${width * 0.32}" cy="-14" r="30" fill="#ed2939" />
-        <text x="${width * 0.32 + 45}" y="-2" text-anchor="start" fill="#ffffff" font-family="Arial Black, Impact, sans-serif" font-size="42" font-weight="900">HEART</text>
-        <rect x="${width * 0.5 - 2}" y="-40" width="4" height="55" fill="#ffffff" fill-opacity="0.25" rx="2" />
-        <circle cx="${width * 0.58}" cy="-14" r="30" fill="#002395" />
-        <text x="${width * 0.58 + 45}" y="-2" text-anchor="start" fill="#ffffff" font-family="Arial Black, Impact, sans-serif" font-size="42" font-weight="900">LIKE</text>
-    </g>
-</svg>`);
-		},
-	},
-];
+import type { ImageComposeConfig } from "~/types";
 
 /**
  * Service responsible for composing final images using AI-generated base images and templates.
@@ -99,7 +42,7 @@ export class ImageComposeService {
 		const { width, height } = this._config.image;
 
 		const template =
-			templates.find((t) => t.id === templateId) ||
+			templates.find((t: { id: string }) => t.id === templateId) ||
 			templates[Math.floor(Math.random() * templates.length)];
 
 		this._logger.debug(`Using template: ${template?.id}`);
@@ -128,5 +71,12 @@ export class ImageComposeService {
 			`Final image written to: ${this._config.output.imagePath}`,
 		);
 		return this._config.output.imagePath;
+	}
+
+	/**
+	 * Returns the list of available template IDs.
+	 */
+	public getAvailableTemplateIds(): string[] {
+		return templates.map((t: { id: string }) => t.id);
 	}
 }

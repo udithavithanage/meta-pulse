@@ -1,5 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 
+import { cleanCaptionText } from "~/utils";
+
 import type { HistoryService, LoggerService } from "~/services";
 import type { GeminiConfig, TopicPlan } from "~/types";
 
@@ -242,6 +244,7 @@ Strict rules:
 		}
 
 		caption = this._ensureHashtags(caption);
+		caption = cleanCaptionText(caption);
 
 		this._logger.info(`Generated caption:\n${caption}`);
 
