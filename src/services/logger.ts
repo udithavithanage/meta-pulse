@@ -4,28 +4,28 @@ import path from "node:path";
 import { LogLevel } from "~/types";
 
 export class LoggerService {
-	private logFilePath: string;
+	private _logFilePath: string;
 
-	constructor(logFilePath: string = "./logs/app.log") {
-		this.logFilePath = logFilePath;
+	public constructor(logFilePath: string = "./logs/app.log") {
+		this._logFilePath = logFilePath;
 	}
 
-	private log(level: LogLevel, message: string): void {
+	private _log(level: LogLevel, message: string): void {
 		const timestamp = new Date().toISOString();
 		const logEntry = `[${timestamp}] [${level}] ${message}`;
 
 		console.log(logEntry);
 
-		this.writeToFile(logEntry);
+		this._writeToFile(logEntry);
 	}
 
-	private writeToFile(logEntry: string): void {
+	private _writeToFile(logEntry: string): void {
 		try {
-			const dir = path.dirname(this.logFilePath);
+			const dir = path.dirname(this._logFilePath);
 			if (!fs.existsSync(dir)) {
 				fs.mkdirSync(dir, { recursive: true });
 			}
-			fs.appendFileSync(this.logFilePath, `${logEntry}\n`, {
+			fs.appendFileSync(this._logFilePath, `${logEntry}\n`, {
 				encoding: "utf8",
 			});
 		} catch (err) {
@@ -34,18 +34,18 @@ export class LoggerService {
 	}
 
 	public debug(message: string): void {
-		this.log(LogLevel.DEBUG, message);
+		this._log(LogLevel.DEBUG, message);
 	}
 
 	public info(message: string): void {
-		this.log(LogLevel.INFO, message);
+		this._log(LogLevel.INFO, message);
 	}
 
 	public warn(message: string): void {
-		this.log(LogLevel.WARN, message);
+		this._log(LogLevel.WARN, message);
 	}
 
 	public error(message: string): void {
-		this.log(LogLevel.ERROR, message);
+		this._log(LogLevel.ERROR, message);
 	}
 }

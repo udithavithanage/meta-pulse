@@ -2,16 +2,16 @@ import type { LoggerService } from "~/services";
 import type { PollinationsConfig, TopicPlan } from "~/types";
 
 export class PollinationsService {
-	private config: PollinationsConfig;
-	private logger: LoggerService;
+	private _config: PollinationsConfig;
+	private _logger: LoggerService;
 
-	constructor(config: PollinationsConfig, logger: LoggerService) {
-		this.config = config;
-		this.logger = logger;
+	public constructor(config: PollinationsConfig, logger: LoggerService) {
+		this._config = config;
+		this._logger = logger;
 	}
 
-	private buildPrompt(plan: TopicPlan): string {
-		return this.config.image.promptTemplate
+	private _buildPrompt(plan: TopicPlan): string {
+		return this._config.image.promptTemplate
 			.replace("{{TOPIC}}", plan.topic)
 			.replace("{{VISUAL_HINT}}", plan.visualHint || plan.topic);
 	}
@@ -20,12 +20,12 @@ export class PollinationsService {
 	 * Generates the base AI photo/illustration using Pollinations.ai API.
 	 * Returns a JPEG buffer.
 	 */
-	async generateImage(plan: TopicPlan): Promise<Buffer> {
-		this.logger.info("[2/6] Generating AI image with Pollinations.ai...");
+	public async generateImage(plan: TopicPlan): Promise<Buffer> {
+		this._logger.info("[2/6] Generating AI image with Pollinations.ai...");
 
-		const prompt = this.buildPrompt(plan);
+		const prompt = this._buildPrompt(plan);
 		const encodedPrompt = encodeURIComponent(prompt);
-		const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${this.config.image.width}&height=${this.config.image.height}&nologo=true`;
+		const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${this._config.image.width}&height=${this._config.image.height}&nologo=true`;
 
 		try {
 			const response = await fetch(imageUrl);
@@ -39,7 +39,7 @@ export class PollinationsService {
 			const arrayBuffer = await response.arrayBuffer();
 			const buffer = Buffer.from(arrayBuffer);
 
-			this.logger.info("AI image successfully received from Pollinations.ai");
+			this._logger.info("AI image successfully received from Pollinations.ai");
 			return buffer;
 		} catch (error) {
 			throw new Error(

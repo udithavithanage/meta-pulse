@@ -11,35 +11,35 @@ import type {
 } from "~/types";
 
 export class FacebookService {
-	private config: FacebookConfig;
-	private reliability: ReliabilityConfig;
-	private logger: LoggerService;
-	private withRetry: <T>(
+	private _config: FacebookConfig;
+	private _reliability: ReliabilityConfig;
+	private _logger: LoggerService;
+	private _withRetry: <T>(
 		fn: () => Promise<T>,
 		description: string,
 	) => Promise<T>;
 
-	constructor(
+	public constructor(
 		config: FacebookConfig,
 		reliability: ReliabilityConfig,
 		logger: LoggerService,
 		withRetry: <T>(fn: () => Promise<T>, description: string) => Promise<T>,
 	) {
-		this.config = config;
-		this.reliability = reliability;
-		this.logger = logger;
-		this.withRetry = withRetry;
+		this._config = config;
+		this._reliability = reliability;
+		this._logger = logger;
+		this._withRetry = withRetry;
 	}
 
-	async postToFacebook(
+	public async postToFacebook(
 		imagePath: string,
 		caption: string,
 	): Promise<FacebookPostResponse> {
-		this.logger.info(
+		this._logger.info(
 			"[5/6] Uploading to Facebook via Feed Post method (Page Token)...",
 		);
 
-		const { pageId, accessToken, graphVersion } = this.config;
+		const { pageId, accessToken, graphVersion } = this._config;
 
 		if (!pageId || !accessToken) {
 			throw new Error(
@@ -49,7 +49,7 @@ export class FacebookService {
 
 		const doUpload = async () => {
 			// Step 1: Upload photo as unpublished to get Media ID
-			this.logger.info(
+			this._logger.info(
 				"-> Step 1: Uploading image as unpublished to get Media ID...",
 			);
 			const photoUrl = `https://graph.facebook.com/${graphVersion}/${pageId}/photos`;
@@ -66,14 +66,14 @@ export class FacebookService {
 				headers: { ...photoForm.getHeaders() },
 				maxContentLength: Infinity,
 				maxBodyLength: Infinity,
-				timeout: this.reliability.requestTimeoutMs,
+				timeout: this._reliability.requestTimeoutMs,
 			});
 
 			const mediaId = photoResponse.data.id;
-			this.logger.info(`Image uploaded successfully. Media ID: ${mediaId}`);
+			this._logger.info(`Image uploaded successfully. Media ID: ${mediaId}`);
 
 			// Step 2: Publish standard feed post with the image
-			this.logger.info(
+			this._logger.info(
 				"-> Step 2: Publishing standard feed post with the image...",
 			);
 			const feedUrl = `https://graph.facebook.com/${graphVersion}/${pageId}/feed`;
@@ -85,16 +85,16 @@ export class FacebookService {
 			};
 
 			const feedResponse = await axios.post(feedUrl, feedData, {
-				timeout: this.reliability.requestTimeoutMs,
+				timeout: this._reliability.requestTimeoutMs,
 			});
 
 			return feedResponse.data;
 		};
 
-		const result = await this.withRetry(doUpload, "Facebook upload");
+		const result = await this._withRetry(doUpload, "Facebook upload");
 
-		this.logger.info("[6/6] Facebook post successful!");
-		this.logger.info(`Post response ID: ${result.id}`);
+		this._logger.info("[6/6] Facebook post successful!");
+		this._logger.info(`Post response ID: ${result.id}`);
 
 		return result;
 	}
