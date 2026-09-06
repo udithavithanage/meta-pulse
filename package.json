@@ -1,29 +1,29 @@
 {
-  "name": "meta-pulse",
-  "version": "0.0.1",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
-  "scripts": {
-    "start": "bun run ./src/index.ts",
-    "format": "biome format --write .",
-    "lint": "biome lint .",
-    "typecheck": "tsc --noEmit",
-    "prepare": "chiva install",
-    "check:token": "bun run ./scripts/check-token.ts"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "2.5.12",
-    "@commitlint/cli": "^21.2.1",
-    "@commitlint/config-conventional": "^21.2.0",
-    "@types/bun": "latest",
-    "bun-types": "^1.4.2"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "dependencies": {
-    "@google/genai": "^2.21.0",
-    "axios": "^1.20.0"
-  }
+	"name": "meta-pulse",
+	"version": "0.0.1",
+	"module": "index.ts",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"start": "bun run ./src/index.ts",
+		"format": "biome format --write .",
+		"lint": "biome lint .",
+		"typecheck": "tsc --noEmit",
+		"prepare": "chiva install",
+		"check:token": "bun run ./scripts/check-token.ts"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.5.12",
+		"@commitlint/cli": "^21.2.1",
+		"@commitlint/config-conventional": "^21.2.0",
+		"@types/bun": "latest",
+		"bun-types": "^1.4.2"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"@google/genai": "^2.21.0",
+		"axios": "^1.20.0"
+	}
 }

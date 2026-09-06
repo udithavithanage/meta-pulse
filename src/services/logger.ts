@@ -30,7 +30,9 @@ export class LoggerService {
 			if (!fs.existsSync(dir)) {
 				fs.mkdirSync(dir, { recursive: true });
 			}
-			fs.appendFileSync(this.logFilePath, `${logEntry}\n`, { encoding: "utf8" });
+			fs.appendFileSync(this.logFilePath, `${logEntry}\n`, {
+				encoding: "utf8",
+			});
 		} catch (err) {
 			console.error(`Failed to write to log file: ${(err as Error).message}`);
 		}
