@@ -63,6 +63,7 @@ export class ConfigService {
 				pageName: this._getRequired("FACEBOOK_PAGE_NAME"),
 				accessToken: this._getRequired("FACEBOOK_ACCESS_TOKEN"),
 				graphVersion: this._getRequired("GRAPH_API_VERSION"),
+				postToStory: this._getRequired("FACEBOOK_POST_TO_STORY") === "true",
 			},
 			reliability: {
 				requestTimeoutMs: this._getRequiredNumber(

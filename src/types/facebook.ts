@@ -3,6 +3,7 @@ export interface FacebookConfig {
 	pageName: string;
 	accessToken: string;
 	graphVersion: string;
+	postToStory: boolean;
 }
 
 export interface ReliabilityConfig {
@@ -12,4 +13,14 @@ export interface ReliabilityConfig {
 export interface FacebookPostResponse {
 	id: string;
 	post_id?: string;
+}
+
+export interface FacebookGraphError {
+	message: string;
+	type: string;
+	code: number;
+	error_subcode?: number;
+	error_user_title?: string;
+	error_user_msg?: string;
+	fbtrace_id?: string;
 }
