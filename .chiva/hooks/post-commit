@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+# Run post-commit checks.
+set -e
+
+echo "Commiting configuration changes..."
+GIT_HOOK=1 chiva commit
+
+echo "Finished post-commit processing."

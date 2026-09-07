@@ -1,0 +1,12 @@
+{
+	"organizationId": "#organization",
+	"repoId": "#repo",
+	"apps": [
+		{
+			"appId": "meta-pulse",
+			"configFilePath": "/.env",
+			"configExampleFilePath": "/.env.example",
+			"configFileEncoding": "utf-8"
+		}
+	]
+}
