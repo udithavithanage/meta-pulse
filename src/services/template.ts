@@ -42,6 +42,41 @@ function iconBadge(
 }
 
 /**
+ * Rough estimate of rendered text width for bold/black uppercase-style labels
+ * (Arial Black / Impact). Not pixel-perfect, but close enough to keep the
+ * reaction row visually centered regardless of label length or canvas width.
+ */
+function measureLabelWidth(label: string, fontSize: number): number {
+	return label.length * fontSize * 0.62;
+}
+
+type BadgeSpec = { r: number; label: string; fontSize: number };
+
+/**
+ * Computes horizontal centers for a "heart | like" style badge pair so the
+ * WHOLE row (both circles + both labels) is centered on the canvas, no
+ * matter how wide the canvas is or how long each label is. Also returns a
+ * midpoint x for an optional divider between the two badges.
+ */
+function computeCenteredPair(
+	width: number,
+	badge1: BadgeSpec,
+	badge2: BadgeSpec,
+	gap: number,
+): { cx1: number; cx2: number; dividerX: number } {
+	const w1 =
+		badge1.r * 2 + 16 + measureLabelWidth(badge1.label, badge1.fontSize);
+	const w2 =
+		badge2.r * 2 + 16 + measureLabelWidth(badge2.label, badge2.fontSize);
+	const total = w1 + gap + w2;
+	const startX = width / 2 - total / 2;
+	const cx1 = startX + badge1.r;
+	const cx2 = startX + w1 + gap + badge2.r;
+	const dividerX = startX + w1 + gap / 2;
+	return { cx1, cx2, dividerX };
+}
+
+/**
  * Wraps headline text and returns the positioned <text> block, bottom-anchored at textBottomY.
  */
 function headlineBlock(
@@ -78,6 +113,12 @@ export const templates: Template[] = [
 			const safeText = escapeXml(headline);
 			const pollY = height - 90;
 			const textBottomY = pollY - 140;
+			const pos = computeCenteredPair(
+				width,
+				{ r: 30, label: "HEART", fontSize: 42 },
+				{ r: 30, label: "LIKE", fontSize: 42 },
+				56,
+			);
 
 			return Buffer.from(`
 <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
@@ -99,9 +140,9 @@ export const templates: Template[] = [
     <rect x="${width * 0.366}" y="${pollY - 95}" width="${width * 0.266}" height="6" fill="#ffffff" />
     <rect x="${width * 0.632}" y="${pollY - 95}" width="${width * 0.266}" height="6" fill="#ed2939" rx="2" />
     <g transform="translate(0, ${pollY})">
-        ${iconBadge(width * 0.32, -14, 30, "#ed2939", "heart", "HEART", "#ffffff", 42, "right")}
-        <rect x="${width * 0.5 - 2}" y="-40" width="4" height="55" fill="#ffffff" fill-opacity="0.25" rx="2" />
-        ${iconBadge(width * 0.58, -14, 30, "#002395", "thumb", "LIKE", "#ffffff", 42, "right")}
+        ${iconBadge(pos.cx1, -14, 30, "#ed2939", "heart", "HEART", "#ffffff", 42, "right")}
+        <rect x="${pos.dividerX - 2}" y="-40" width="4" height="55" fill="#ffffff" fill-opacity="0.25" rx="2" />
+        ${iconBadge(pos.cx2, -14, 30, "#002395", "thumb", "LIKE", "#ffffff", 42, "right")}
     </g>
 </svg>`);
 		},
@@ -114,6 +155,12 @@ export const templates: Template[] = [
 			const safeText = escapeXml(headline);
 			const pollY = height - 100;
 			const textBottomY = pollY - 150;
+			const pos = computeCenteredPair(
+				width,
+				{ r: 32, label: "HEART", fontSize: 40 },
+				{ r: 32, label: "LIKE", fontSize: 40 },
+				56,
+			);
 			return Buffer.from(`
 <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -135,9 +182,9 @@ export const templates: Template[] = [
     <text x="${width / 2}" y="65" text-anchor="middle" fill="#ff2fd6" font-family="Arial" font-size="30" font-weight="bold" filter="url(#neonGlow)">${escapeXml(pageName)}</text>
     ${headlineBlock(safeText, width, 56, textBottomY, "Arial Black, Impact, sans-serif", "#ffffff", 'filter="url(#neonGlow)"', 24)}
     <g transform="translate(0, ${pollY})">
-        ${iconBadge(width * 0.3, -14, 32, "#00f0ff", "heart", "HEART", "#00f0ff", 40, "right")}
-        <rect x="${width * 0.5 - 1.5}" y="-42" width="3" height="58" fill="#ff2fd6" opacity="0.6" />
-        ${iconBadge(width * 0.62, -14, 32, "#ff2fd6", "thumb", "LIKE", "#ff2fd6", 40, "right")}
+        ${iconBadge(pos.cx1, -14, 32, "#00f0ff", "heart", "HEART", "#00f0ff", 40, "right")}
+        <rect x="${pos.dividerX - 1.5}" y="-42" width="3" height="58" fill="#ff2fd6" opacity="0.6" />
+        ${iconBadge(pos.cx2, -14, 32, "#ff2fd6", "thumb", "LIKE", "#ff2fd6", 40, "right")}
     </g>
 </svg>`);
 		},
@@ -150,6 +197,12 @@ export const templates: Template[] = [
 			const safeText = escapeXml(headline);
 			const pollY = height - 85;
 			const textBottomY = pollY - 130;
+			const pos = computeCenteredPair(
+				width,
+				{ r: 26, label: "REACT", fontSize: 30 },
+				{ r: 26, label: "REACT", fontSize: 30 },
+				40,
+			);
 			return Buffer.from(`
 <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -164,8 +217,8 @@ export const templates: Template[] = [
     ${headlineBlock(safeText, width, 50, textBottomY, "Arial, Helvetica, sans-serif", "#ffffff", "", 28)}
     <rect x="${width * 0.15}" y="${pollY - 80}" width="${width * 0.7}" height="2" fill="#4a4a4a" />
     <g transform="translate(0, ${pollY})">
-        ${iconBadge(width * 0.34, -10, 26, "#e63946", "heart", "REACT", "#e5e5e5", 30, "right")}
-        ${iconBadge(width * 0.66, -10, 26, "#457b9d", "thumb", "REACT", "#e5e5e5", 30, "right")}
+        ${iconBadge(pos.cx1, -10, 26, "#e63946", "heart", "REACT", "#e5e5e5", 30, "right")}
+        ${iconBadge(pos.cx2, -10, 26, "#457b9d", "thumb", "REACT", "#e5e5e5", 30, "right")}
     </g>
 </svg>`);
 		},
@@ -178,6 +231,12 @@ export const templates: Template[] = [
 			const safeText = escapeXml(headline);
 			const pollY = height - 95;
 			const textBottomY = pollY - 145;
+			const pos = computeCenteredPair(
+				width,
+				{ r: 30, label: "HEART", fontSize: 36 },
+				{ r: 30, label: "LIKE", fontSize: 36 },
+				56,
+			);
 			return Buffer.from(`
 <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -200,8 +259,8 @@ export const templates: Template[] = [
     ${headlineBlock(safeText, width, 54, textBottomY, "Georgia, 'Times New Roman', serif", "url(#goldGrad)", 'filter="url(#goldShadow)"', 26)}
     <rect x="${width * 0.2}" y="${pollY - 90}" width="${width * 0.6}" height="3" fill="url(#goldGrad)" />
     <g transform="translate(0, ${pollY})">
-        ${iconBadge(width * 0.32, -14, 30, "#1a1a1a", "heart", "HEART", "#fcf6ba", 36, "right", "#bf953f")}
-        ${iconBadge(width * 0.68, -14, 30, "#1a1a1a", "thumb", "LIKE", "#fcf6ba", 36, "right", "#bf953f")}
+        ${iconBadge(pos.cx1, -14, 30, "#1a1a1a", "heart", "HEART", "#fcf6ba", 36, "right", "#bf953f")}
+        ${iconBadge(pos.cx2, -14, 30, "#1a1a1a", "thumb", "LIKE", "#fcf6ba", 36, "right", "#bf953f")}
     </g>
 </svg>`);
 		},
@@ -214,6 +273,12 @@ export const templates: Template[] = [
 			const safeText = escapeXml(headline);
 			const pollY = height - 90;
 			const textBottomY = pollY - 135;
+			const pos = computeCenteredPair(
+				width,
+				{ r: 30, label: "HEART", fontSize: 38 },
+				{ r: 30, label: "LIKE", fontSize: 38 },
+				56,
+			);
 			return Buffer.from(`
 <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -228,9 +293,9 @@ export const templates: Template[] = [
     <text x="${width / 2}" y="58" text-anchor="middle" fill="#7a3b57" font-family="Arial Rounded MT Bold, Arial, sans-serif" font-size="24" font-weight="bold">${escapeXml(pageName)}</text>
     ${headlineBlock(safeText, width, 52, textBottomY, "Arial Rounded MT Bold, Arial, sans-serif", "#fff6fa", "", 26)}
     <g transform="translate(0, ${pollY})">
-        ${iconBadge(width * 0.32, -14, 30, "#ff8fab", "heart", "HEART", "#fff6fa", 38, "right")}
-        <circle cx="${width * 0.5}" cy="-14" r="4" fill="#ffd6e8" />
-        ${iconBadge(width * 0.68, -14, 30, "#8ecae6", "thumb", "LIKE", "#fff6fa", 38, "right")}
+        ${iconBadge(pos.cx1, -14, 30, "#ff8fab", "heart", "HEART", "#fff6fa", 38, "right")}
+        <circle cx="${pos.dividerX}" cy="-14" r="4" fill="#ffd6e8" />
+        ${iconBadge(pos.cx2, -14, 30, "#8ecae6", "thumb", "LIKE", "#fff6fa", 38, "right")}
     </g>
 </svg>`);
 		},
@@ -243,6 +308,12 @@ export const templates: Template[] = [
 			const safeText = escapeXml(headline);
 			const pollY = height - 95;
 			const textBottomY = pollY - 145;
+			const pos = computeCenteredPair(
+				width,
+				{ r: 32, label: "HEART", fontSize: 42 },
+				{ r: 32, label: "LIKE", fontSize: 42 },
+				56,
+			);
 			return Buffer.from(`
 <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -260,8 +331,8 @@ export const templates: Template[] = [
     ${headlineBlock(safeText, width, 56, textBottomY, "Arial Black, Impact, sans-serif", "#ffffff", 'filter="url(#sportShadow)"', 22)}
     <rect x="${width * 0.1}" y="${pollY - 92}" width="${width * 0.8}" height="8" fill="#ffd60a" />
     <g transform="translate(0, ${pollY})">
-        ${iconBadge(width * 0.32, -14, 32, "#d62828", "heart", "HEART", "#ffffff", 42, "right")}
-        ${iconBadge(width * 0.68, -14, 32, "#1d3557", "thumb", "LIKE", "#ffffff", 42, "right")}
+        ${iconBadge(pos.cx1, -14, 32, "#d62828", "heart", "HEART", "#ffffff", 42, "right")}
+        ${iconBadge(pos.cx2, -14, 32, "#1d3557", "thumb", "LIKE", "#ffffff", 42, "right")}
     </g>
 </svg>`);
 		},
@@ -274,6 +345,12 @@ export const templates: Template[] = [
 			const safeText = escapeXml(headline);
 			const pollY = height - 85;
 			const textBottomY = pollY - 130;
+			const pos = computeCenteredPair(
+				width,
+				{ r: 27, label: "AGREE", fontSize: 28 },
+				{ r: 27, label: "SUPPORT", fontSize: 28 },
+				40,
+			);
 			return Buffer.from(`
 <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -288,8 +365,8 @@ export const templates: Template[] = [
     <text x="${width / 2}" y="45" text-anchor="middle" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="bold">${escapeXml(pageName)}</text>
     ${headlineBlock(safeText, width, 48, textBottomY, "Arial, Helvetica, sans-serif", "#ffffff", "", 30)}
     <g transform="translate(0, ${pollY})">
-        ${iconBadge(width * 0.34, -12, 27, "#2a6f97", "heart", "AGREE", "#ffffff", 28, "right")}
-        ${iconBadge(width * 0.66, -12, 27, "#61a5c2", "thumb", "SUPPORT", "#ffffff", 28, "right")}
+        ${iconBadge(pos.cx1, -12, 27, "#2a6f97", "heart", "AGREE", "#ffffff", 28, "right")}
+        ${iconBadge(pos.cx2, -12, 27, "#61a5c2", "thumb", "SUPPORT", "#ffffff", 28, "right")}
     </g>
 </svg>`);
 		},
@@ -302,6 +379,12 @@ export const templates: Template[] = [
 			const safeText = escapeXml(headline);
 			const pollY = height - 95;
 			const textBottomY = pollY - 145;
+			const pos = computeCenteredPair(
+				width,
+				{ r: 30, label: "HEART", fontSize: 40 },
+				{ r: 30, label: "LIKE", fontSize: 40 },
+				56,
+			);
 			return Buffer.from(`
 <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -318,8 +401,8 @@ export const templates: Template[] = [
     <text x="${width / 2}" y="58" text-anchor="middle" fill="#ffe8d6" font-family="Arial" font-size="28" font-weight="bold">${escapeXml(pageName)}</text>
     ${headlineBlock(safeText, width, 54, textBottomY, "Arial Black, Impact, sans-serif", "#fff4e6", 'filter="url(#sunsetShadow)"', 24)}
     <g transform="translate(0, ${pollY})">
-        ${iconBadge(width * 0.32, -14, 30, "#ff5f6d", "heart", "HEART", "#fff4e6", 40, "right")}
-        ${iconBadge(width * 0.68, -14, 30, "#ffc371", "thumb", "LIKE", "#3d0e1f", 40, "right")}
+        ${iconBadge(pos.cx1, -14, 30, "#ff5f6d", "heart", "HEART", "#fff4e6", 40, "right")}
+        ${iconBadge(pos.cx2, -14, 30, "#ffc371", "thumb", "LIKE", "#3d0e1f", 40, "right")}
     </g>
 </svg>`);
 		},
@@ -332,6 +415,12 @@ export const templates: Template[] = [
 			const safeText = escapeXml(headline);
 			const pollY = height - 95;
 			const textBottomY = pollY - 145;
+			const pos = computeCenteredPair(
+				width,
+				{ r: 30, label: "HEART", fontSize: 40 },
+				{ r: 30, label: "LIKE", fontSize: 40 },
+				56,
+			);
 			return Buffer.from(`
 <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -346,8 +435,8 @@ export const templates: Template[] = [
     <text x="${width / 2}" y="55" text-anchor="middle" fill="#ffd60a" font-family="Georgia, serif" font-size="28" font-weight="bold">${escapeXml(pageName)}</text>
     ${headlineBlock(safeText, width, 54, textBottomY, "Georgia, serif", "#ffffff", "", 24)}
     <g transform="translate(0, ${pollY})">
-        ${iconBadge(width * 0.32, -14, 30, "#c1121f", "heart", "HEART", "#ffffff", 40, "right")}
-        ${iconBadge(width * 0.68, -14, 30, "#0b6e4f", "thumb", "LIKE", "#ffffff", 40, "right")}
+        ${iconBadge(pos.cx1, -14, 30, "#c1121f", "heart", "HEART", "#ffffff", 40, "right")}
+        ${iconBadge(pos.cx2, -14, 30, "#0b6e4f", "thumb", "LIKE", "#ffffff", 40, "right")}
     </g>
 </svg>`);
 		},
@@ -360,6 +449,12 @@ export const templates: Template[] = [
 			const safeText = escapeXml(headline);
 			const pollY = height - 90;
 			const textBottomY = pollY - 140;
+			const pos = computeCenteredPair(
+				width,
+				{ r: 32, label: "LOVE IT", fontSize: 34 },
+				{ r: 32, label: "LIKE IT", fontSize: 34 },
+				56,
+			);
 			return Buffer.from(`
 <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -376,8 +471,8 @@ export const templates: Template[] = [
     <text x="${width / 2}" y="58" text-anchor="middle" fill="#ffb3c6" font-family="Georgia, serif" font-size="28" font-weight="bold">${escapeXml(pageName)}</text>
     ${headlineBlock(safeText, width, 54, textBottomY, "Georgia, serif", "#ffffff", 'filter="url(#loveShadow)"', 24)}
     <g transform="translate(0, ${pollY})">
-        ${iconBadge(width * 0.32, -14, 32, "#e63950", "heart", "LOVE IT", "#ffffff", 34, "right")}
-        ${iconBadge(width * 0.68, -14, 32, "#9d4edd", "thumb", "LIKE IT", "#ffffff", 34, "right")}
+        ${iconBadge(pos.cx1, -14, 32, "#e63950", "heart", "LOVE IT", "#ffffff", 34, "right")}
+        ${iconBadge(pos.cx2, -14, 32, "#9d4edd", "thumb", "LIKE IT", "#ffffff", 34, "right")}
     </g>
 </svg>`);
 		},
