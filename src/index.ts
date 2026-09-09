@@ -27,10 +27,7 @@ async function withRetry<T>(
 	}
 }
 
-/**
- * Main function to execute the automated content workflow.
- */
-async function main() {
+export async function main() {
 	const configService = new ConfigService();
 	const config = configService.load();
 
@@ -110,4 +107,7 @@ async function main() {
 	}
 }
 
-main();
+// Execute if run directly
+if (import.meta.main) {
+	main();
+}
