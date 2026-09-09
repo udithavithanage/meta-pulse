@@ -148,49 +148,7 @@ export const templates: Template[] = [
 		},
 	},
 
-	// 2) Neon Cyberpunk
-	{
-		id: "neon-cyber",
-		svgBuilder: (headline, width, height, pageName) => {
-			const safeText = escapeXml(headline);
-			const pollY = height - 100;
-			const textBottomY = pollY - 150;
-			const pos = computeCenteredPair(
-				width,
-				{ r: 32, label: "HEART", fontSize: 40 },
-				{ r: 32, label: "LIKE", fontSize: 40 },
-				56,
-			);
-			return Buffer.from(`
-<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-        <linearGradient id="fade2" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#0d0221" stop-opacity="0" />
-            <stop offset="45%" stop-color="#0d0221" stop-opacity="0.85" />
-            <stop offset="100%" stop-color="#0d0221" stop-opacity="1" />
-        </linearGradient>
-        <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="6" result="blur" />
-            <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-            </feMerge>
-        </filter>
-    </defs>
-    <rect x="0" y="${height * 0.28}" width="${width}" height="${height * 0.72}" fill="url(#fade2)" />
-    <rect x="0" y="30" width="${width}" height="4" fill="#ff2fd6" />
-    <text x="${width / 2}" y="65" text-anchor="middle" fill="#ff2fd6" font-family="Arial" font-size="30" font-weight="bold" filter="url(#neonGlow)">${escapeXml(pageName)}</text>
-    ${headlineBlock(safeText, width, 56, textBottomY, "Arial Black, Impact, sans-serif", "#ffffff", 'filter="url(#neonGlow)"', 24)}
-    <g transform="translate(0, ${pollY})">
-        ${iconBadge(pos.cx1, -14, 32, "#00f0ff", "heart", "HEART", "#00f0ff", 40, "right")}
-        <rect x="${pos.dividerX - 1.5}" y="-42" width="3" height="58" fill="#ff2fd6" opacity="0.6" />
-        ${iconBadge(pos.cx2, -14, 32, "#ff2fd6", "thumb", "LIKE", "#ff2fd6", 40, "right")}
-    </g>
-</svg>`);
-		},
-	},
-
-	// 3) Minimalist Dark / Corporate
+	// 2) Minimalist Dark / Corporate
 	{
 		id: "minimal-dark",
 		svgBuilder: (headline, width, height, pageName) => {
@@ -224,7 +182,7 @@ export const templates: Template[] = [
 		},
 	},
 
-	// 4) Gold Luxury
+	// 3) Gold Luxury
 	{
 		id: "gold-luxury",
 		svgBuilder: (headline, width, height, pageName) => {
@@ -266,7 +224,7 @@ export const templates: Template[] = [
 		},
 	},
 
-	// 5) Pastel / Cute
+	// 4) Pastel / Cute
 	{
 		id: "pastel-cute",
 		svgBuilder: (headline, width, height, pageName) => {
@@ -301,7 +259,7 @@ export const templates: Template[] = [
 		},
 	},
 
-	// 6) Sports / Stadium
+	// 5) Sports / Stadium
 	{
 		id: "sports-stadium",
 		svgBuilder: (headline, width, height, pageName) => {
@@ -338,7 +296,7 @@ export const templates: Template[] = [
 		},
 	},
 
-	// 7) Corporate Blue
+	// 6) Corporate Blue
 	{
 		id: "corporate-blue",
 		svgBuilder: (headline, width, height, pageName) => {
@@ -372,7 +330,7 @@ export const templates: Template[] = [
 		},
 	},
 
-	// 8) Sunset Gradient
+	// 7) Sunset Gradient
 	{
 		id: "sunset-gradient",
 		svgBuilder: (headline, width, height, pageName) => {
@@ -408,7 +366,7 @@ export const templates: Template[] = [
 		},
 	},
 
-	// 9) Holiday / Festive
+	// 8) Holiday / Festive
 	{
 		id: "holiday-festive",
 		svgBuilder: (headline, width, height, pageName) => {
@@ -442,7 +400,7 @@ export const templates: Template[] = [
 		},
 	},
 
-	// 10) Valentine's / Love
+	// 9) Valentine's / Love
 	{
 		id: "valentine-love",
 		svgBuilder: (headline, width, height, pageName) => {
