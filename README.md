@@ -54,6 +54,13 @@ Your Page ID is a unique numeric identifier for your Facebook Page.
 
 To automate posts, you need a Page Access Token that does not expire. Follow these steps carefully:
 
+**Watch this video tutorial for a step-by-step guide:**
+
+<video width="100%" controls>
+   <source src="assets/mp4/screen-recording.mp4" type="video/mp4">
+   Your browser does not support the video tag.
+</video>
+
 #### Step 3.1: Create a Meta Developer App
 
 1. Go to the [Meta for Developers Portal](https://developers.facebook.com/) and register or log in.
